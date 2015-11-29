@@ -1,0 +1,19 @@
+%active Building : 0;
+%active SRoom : 0;
+%active Alice : 0;
+%active Bob : 0;
+%active Comp : 1;
+%passive Phone : 1;
+%passive Tok : 0;
+
+%rule call Phone[-].Tok || Phone[-].$0 -> Phone[PhoneLink].Tok || Phone[PhoneLink].$0;
+%rule transf_tok Alice.Phone[x].Tok || Bob.Phone[x].$0 -> Alice.Phone[-] || Bob.Phone[-].(Tok | $0);
+
+%rule comp_connect SRoom.(Comp[x].Tok | Alice.Phone[y]) -> SRoom.(Comp[x].Tok | Alice.Phone[x]);
+%rule transfer_comp Comp[x].Tok || Phone[x] -> Comp[x] || Phone[-].Tok;
+%rule enter_room Alice.$0 | SRoom.$1 | $2 -> SRoom.($1 | Alice.$0) | $2;
+%rule leave_room SRoom.(Alice.$0 | $1) | $2 -> SRoom.$1 | Alice.$0 | $2;
+# The building model
+Building.(SRoom.Comp[C1].Tok | SRoom.Comp[C2].Tok | Alice.Phone[-] ) | Bob.Phone[-];
+%property secure !matches(Bob.Phone[x].(Tok | $0));
+%check

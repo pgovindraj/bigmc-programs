@@ -1,0 +1,37 @@
+#Network
+%passive Net : 1;
+#PC
+%passive PC : 2;
+
+#Packet
+%passive Pkt : 2;
+
+
+#RR :: Machine can create a packet 
+
+#%rule create_pkt_bcast
+#	 (PC [x,y])    -> (PC[x,y] . Pkt[y,-] )  ;
+
+## RR:: 	 Machine can create a packet for other machine 
+
+%rule create_pkt_dest
+	(PC[x,y] ) | PC[a,b] -> (PC[x,y].Pkt[y,b]  ) | PC[a,b];
+
+##RR :: 
+%rule send_pkt  
+	(PC[x,y].Pkt[y,b] ) | PC[a,b] ->  (PC[x,y] ) | PC[a,b].Pkt[y,b];
+
+#Initial Config
+PC[A,B] | PC[X,Y];
+
+
+#%property sendSucc !matches((PC[A,B] ) | PC[X,Y].Pkt[B,Y]); 
+#%property sendSucc matches((PC[A,B] ) | PC[X,Y].Pkt[B,Y]); 
+check
+
+################OUTPUT####################
+1: (PC[A,B].nil | PC[X,Y].nil)
+2: (PC[A,B].Pkt[B,Y].nil | PC[X,Y].nil)
+3: (PC[X,Y].Pkt[Y,B].nil | PC[A,B].nil)
+4: (PC[A,B].nil | PC[X,Y].Pkt[B,Y].nil)
+5: (PC[X,Y].nil | PC[A,B].Pkt[Y,B].nil)

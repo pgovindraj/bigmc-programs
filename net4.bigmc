@@ -1,0 +1,32 @@
+#Network
+%passive Net : 1;
+
+#PC
+%passive PC : 2;
+
+#Packet
+%passive Pkt : 2;
+
+#Swicth
+%passive Switch: 1;
+
+
+%rule associate_address
+Switch[netaddress].PC[-,myAddr] -> Switch[netaddress].PC[netaddress,myAddr] ;
+
+
+#RR :: Machine can create a packet for other machine 
+%rule create_pkt
+
+#	 (Switch[netAddr0].PC [netAddr0,myAddr0])   -> (Switch[netAddr0].PC[netAddr0,myAddr0] . Pkt[myAddr0,-] )  ;
+(Switch[x].PC[x,y] ) | Switch[a].PC[a,b] -> (Switch[x].PC[x,y].Pkt[y,b]  ) | Switch[].PC[a,b];
+
+##RR :: 
+%rule send_pkt
+	(Switch[netAddr0].PC[netAddr0,myAddr0] . Pkt[myAddr0,myAddr1] ) | Switch[netAddr1].PC[netAddr1,myAddr1] ->  Switch[netAddr0].(PC[netAddr0,myAddr0] ) | Switch[netAddr1].PC[netAddr1,myAddr1].Pkt[myAddr0,myAddr1] ;
+
+#Initial Config
+Switch[NA0].PC[-,MY0] | Switch[NA1].PC[NA1,MY1];
+
+#%property sendSucc !matches((PC[netAddr0,myAddr0] ) | PC[netAddr1,myAddr1].Pkt[myAddr0,myAddr1]);
+check

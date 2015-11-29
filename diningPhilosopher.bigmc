@@ -1,0 +1,35 @@
+#Forks, with a fork id
+%passive Fork : 1;
+
+#Philosopher with one [left fork] and one [right fork]
+
+%passive Philosopher : 2;
+
+#Rule for picking a left fork
+
+%rule left_pick
+ 	Philosopher [lf,rf] | Fork [lf] ->  Philosopher [lf,rf].Fork[lf] | nil ;
+
+
+%rule right_pick
+	Philosopher [lf,rf].Fork[lf] | Fork [rf] ->  Philosopher [lf,rf]. (Fork[lf] | Fork[rf] ) ;
+
+%rule drop_left
+	Philosopher [lf,rf]. (Fork[lf] | Fork[rf] ) -> Philosopher [lf,rf]. Fork [rf] | Fork [lf];
+
+%rule drop_right
+	Philosopher [lf,rf]. Fork [rf] -> 	Philosopher [lf,rf] | Fork [rf];
+
+
+#The philospher Table
+
+Fork [F1] | Philosopher [F1,F2] |
+Fork [F2] | Philosopher [F2,F1] ;
+#Fork [F3] | Philosopher [F3,F4] |
+#Fork [F4] | Philosopher [F4,F5] |
+#Fork [F5] | Philosopher [F5,F1]  ;
+
+#%property deadlock_free !terminal ();
+
+
+check

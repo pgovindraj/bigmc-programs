@@ -1,0 +1,24 @@
+#Network
+%passive Net : 1;
+
+#PC
+%passive PC : 2;
+
+#Packet
+%passive Pkt : 2;
+
+
+#RR :: Machine can create a packet for other machine 
+%rule create_pkt
+
+	 (PC [netAddr0,myAddr0])   -> (PC[netAddr0,myAddr0] . Pkt[myAddr0,-] )  ;
+
+##RR :: 
+%rule send_pkt
+	(PC[netAddr0,myAddr0] . Pkt[myAddr0,myAddr1] ) | PC[netAddr1,myAddr1] ->  (PC[netAddr0,myAddr0] ) | PC[netAddr1,myAddr1].Pkt[myAddr0,myAddr1] ;
+
+#Initial Config
+PC[NA0,MY0] | PC[NA1,MY1];
+
+#%property sendSucc !matches((PC[netAddr0,myAddr0] ) | PC[netAddr1,myAddr1].Pkt[myAddr0,myAddr1]);
+check
